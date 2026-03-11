@@ -1,0 +1,11 @@
+{
+  "updated": "2026-03-11",
+  "markets": {
+    "sp500": { "price": "6,690", "change": "-0.2%" },
+    "djia": { "price": "44,300", "change": "-0.1%" },
+    "nasdaq": { "price": "21,400", "change": "0.0%" },
+    "gold": { "price": "5,181", "change": "-1.0%" },
+    "oil": { "price": "87.00", "change": "+4.2%" },
+    "btc": { "price": "70,000", "change": "+2.0%" }
+  }
+}
