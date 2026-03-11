@@ -1,11 +1,29 @@
 {
   "updated": "2026-03-11",
   "markets": {
-    "sp500": { "price": "6,690", "change": "-0.2%" },
-    "djia": { "price": "44,300", "change": "-0.1%" },
-    "nasdaq": { "price": "21,400", "change": "0.0%" },
-    "gold": { "price": "5,181", "change": "-1.0%" },
-    "oil": { "price": "87.00", "change": "+4.2%" },
-    "btc": { "price": "70,000", "change": "+2.0%" }
+    "sp500": {
+      "price": "6,772",
+      "change": "-0.15%"
+    },
+    "djia": {
+      "price": "47,417",
+      "change": "-0.61%"
+    },
+    "nasdaq": {
+      "price": "22,716",
+      "change": "+0.08%"
+    },
+    "gold": {
+      "price": "5,181",
+      "change": "-1.0%"
+    },
+    "oil": {
+      "price": "89.50",
+      "change": "+2.9%"
+    },
+    "btc": {
+      "price": "69,200",
+      "change": "-2.3%"
+    }
   }
 }
