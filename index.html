@@ -119,6 +119,7 @@
     }
     .up { color: var(--green); }
     .down { color: var(--red); }
+    .flat { color: var(--muted); }
     .markets-note {
       font-size: 11px;
       color: var(--muted);
@@ -306,45 +307,45 @@
 
 <header>
   <h1><span class="dot"></span>Dashboard</h1>
-  <div class="meta">Last updated: March 11, 2026<br>BagginsWhirr</div>
+  <div class="meta" id="header-meta">Last updated: March 11, 2026<br>BagginsWhirr</div>
 </header>
 
 <!-- MARKETS -->
 <section>
   <div class="section-label">Markets</div>
   <div class="markets-grid">
-    <div class="market-card">
+    <div class="market-card" data-market="sp500">
       <div class="ticker">S&amp;P 500</div>
       <div class="price">5,614</div>
       <div class="change down">▼ −0.76%</div>
     </div>
-    <div class="market-card">
+    <div class="market-card" data-market="djia">
       <div class="ticker">DJIA</div>
       <div class="price">41,911</div>
       <div class="change down">▼ −0.62%</div>
     </div>
-    <div class="market-card">
+    <div class="market-card" data-market="nasdaq">
       <div class="ticker">Nasdaq</div>
       <div class="price">17,468</div>
       <div class="change down">▼ −0.96%</div>
     </div>
-    <div class="market-card">
+    <div class="market-card" data-market="gold">
       <div class="ticker">Gold (XAU)</div>
       <div class="price">$2,912</div>
       <div class="change up">▲ +0.41%</div>
     </div>
-    <div class="market-card">
+    <div class="market-card" data-market="oil">
       <div class="ticker">Oil (WTI)</div>
       <div class="price">$66.03</div>
       <div class="change down">▼ −1.18%</div>
     </div>
-    <div class="market-card">
+    <div class="market-card" data-market="btc">
       <div class="ticker">BTC</div>
       <div class="price">$81,240</div>
       <div class="change down">▼ −4.22%</div>
     </div>
   </div>
-  <div class="markets-note">Updated daily via morning briefing</div>
+  <div class="markets-note" id="markets-note">Updated daily via morning briefing</div>
 </section>
 
 <!-- SCIENCEBOD PIPELINE -->
@@ -462,8 +463,79 @@
 
 <footer>
   <span>Personal Dashboard · BagginsWhirr</span>
-  <span>March 11, 2026</span>
+  <span id="footer-date">March 11, 2026</span>
 </footer>
+
+<script>
+(async function () {
+  // Fallback values (hardcoded from last manual update)
+  const fallback = {
+    sp500:  { price: "5,614",   change: "-0.76%" },
+    djia:   { price: "41,911",  change: "-0.62%" },
+    nasdaq: { price: "17,468",  change: "-0.96%" },
+    gold:   { price: "$2,912",  change: "+0.41%" },
+    oil:    { price: "$66.03",  change: "-1.18%" },
+    btc:    { price: "$81,240", change: "-4.22%" }
+  };
+
+  function applyMarket(key, data) {
+    const card = document.querySelector('[data-market="' + key + '"]');
+    if (!card) return;
+    const priceEl  = card.querySelector('.price');
+    const changeEl = card.querySelector('.change');
+
+    if (priceEl) priceEl.textContent = data.price;
+
+    if (changeEl) {
+      const val = parseFloat(data.change.replace('%', ''));
+      if (val > 0) {
+        changeEl.className = 'change up';
+        const pct = data.change.startsWith('+') ? data.change : '+' + data.change;
+        changeEl.textContent = '▲ ' + pct;
+      } else if (val < 0) {
+        changeEl.className = 'change down';
+        changeEl.textContent = '▼ ' + data.change;
+      } else {
+        changeEl.className = 'change flat';
+        changeEl.textContent = data.change;
+      }
+    }
+  }
+
+  function formatDate(dateStr) {
+    // dateStr: "YYYY-MM-DD"
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    return months[m - 1] + ' ' + d + ', ' + y;
+  }
+
+  function applyAll(markets, updatedDate) {
+    Object.entries(markets).forEach(function([key, data]) {
+      applyMarket(key, data);
+    });
+    if (updatedDate) {
+      const dateStr = formatDate(updatedDate);
+      const metaEl = document.getElementById('header-meta');
+      if (metaEl) metaEl.innerHTML = 'Last updated: ' + dateStr + '<br>BagginsWhirr';
+      const footerEl = document.getElementById('footer-date');
+      if (footerEl) footerEl.textContent = dateStr;
+      const noteEl = document.getElementById('markets-note');
+      if (noteEl) noteEl.textContent = 'Data from ' + dateStr;
+    }
+  }
+
+  try {
+    const res = await fetch('./data.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    applyAll(json.markets, json.updated);
+  } catch (err) {
+    console.warn('data.json fetch failed, using fallback:', err.message);
+    applyAll(fallback, null);
+  }
+})();
+</script>
 
 </body>
 </html>
